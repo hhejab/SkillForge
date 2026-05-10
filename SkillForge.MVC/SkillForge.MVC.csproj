@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Shared domain models and ApplicationDbContext from the API project -->
+    <ProjectReference Include="..\SkillForge.API\SkillForge.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- EF Core SQL Server provider so the MVC app can connect to the same database -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

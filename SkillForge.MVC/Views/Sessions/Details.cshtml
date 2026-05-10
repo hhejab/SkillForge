@@ -1,0 +1,61 @@
+@model SkillForge.API.Models.Session
+@{
+    ViewData["Title"] = "Session Details";
+    var enrollmentCount = (int)(ViewBag.EnrollmentCount ?? 0);
+    var available = Model.Capacity - enrollmentCount;
+}
+
+<h2 class="mb-4">Session Details</h2>
+
+<div class="card shadow-sm mb-4" style="max-width: 680px;">
+    <div class="card-header bg-dark text-white">
+        <strong>@(Model.Course?.Title ?? $"Course #{Model.CourseId}")</strong>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Session ID</dt>
+            <dd class="col-sm-8">#@Model.SessionId</dd>
+
+            <dt class="col-sm-4">Course</dt>
+            <dd class="col-sm-8">@(Model.Course?.Title ?? $"Course #{Model.CourseId}")</dd>
+
+            <dt class="col-sm-4">Instructor</dt>
+            <dd class="col-sm-8">@(Model.Instructor?.FullName ?? $"User #{Model.InstructorId}")</dd>
+
+            <dt class="col-sm-4">Room / Classroom</dt>
+            <dd class="col-sm-8">@Model.Room</dd>
+
+            <dt class="col-sm-4">Start Date &amp; Time</dt>
+            <dd class="col-sm-8">@Model.StartDate.ToString("dddd, dd MMM yyyy — HH:mm")</dd>
+
+            <dt class="col-sm-4">End Date &amp; Time</dt>
+            <dd class="col-sm-8">@Model.EndDate.ToString("dddd, dd MMM yyyy — HH:mm")</dd>
+
+            <dt class="col-sm-4">Duration</dt>
+            <dd class="col-sm-8">@((Model.EndDate - Model.StartDate).TotalHours.ToString("0.##")) hours</dd>
+
+            <dt class="col-sm-4">Capacity</dt>
+            <dd class="col-sm-8">@Model.Capacity seats</dd>
+
+            <dt class="col-sm-4">Enrolled</dt>
+            <dd class="col-sm-8">@enrollmentCount trainees</dd>
+
+            <dt class="col-sm-4">Available Seats</dt>
+            <dd class="col-sm-8">
+                @if (available > 0)
+                {
+                    <span class="badge bg-success">@available seats open</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Full</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.SessionId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Sessions</a>
+</div>

@@ -1,0 +1,91 @@
+@model SkillForge.MVC.ViewModels.SessionFormViewModel
+@{
+    ViewData["Title"] = "Schedule New Session";
+}
+
+<h2 class="mb-4">Schedule New Session</h2>
+
+@if (!Model.Courses.Any())
+{
+    <div class="alert alert-warning">
+        No courses found. Please ask the course management team to add courses before scheduling sessions.
+    </div>
+}
+
+@if (!Model.Instructors.Any())
+{
+    <div class="alert alert-warning">
+        No instructors found. Please ask the user management team to add instructor accounts before scheduling sessions.
+    </div>
+}
+
+<div class="card shadow-sm" style="max-width: 680px;">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <!-- Course -->
+            <div class="mb-3">
+                <label asp-for="CourseId" class="form-label fw-semibold"></label>
+                <select asp-for="CourseId" asp-items="Model.Courses" class="form-select">
+                    <option value="">— Select a course —</option>
+                </select>
+                <span asp-validation-for="CourseId" class="text-danger small"></span>
+            </div>
+
+            <!-- Instructor -->
+            <div class="mb-3">
+                <label asp-for="InstructorId" class="form-label fw-semibold"></label>
+                <select asp-for="InstructorId" asp-items="Model.Instructors" class="form-select">
+                    <option value="">— Select an instructor —</option>
+                </select>
+                <span asp-validation-for="InstructorId" class="text-danger small"></span>
+            </div>
+
+            <!-- Room -->
+            <div class="mb-3">
+                <label asp-for="Room" class="form-label fw-semibold"></label>
+                <input asp-for="Room" class="form-control" placeholder="e.g. Lab 1, Room 204" />
+                <span asp-validation-for="Room" class="text-danger small"></span>
+                <div class="form-text">Enter the exact room name. Availability is checked against other sessions.</div>
+            </div>
+
+            <!-- Start Date -->
+            <div class="mb-3">
+                <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                <input type="datetime-local"
+                       id="StartDate" name="StartDate"
+                       class="form-control"
+                       value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" />
+                <span asp-validation-for="StartDate" class="text-danger small"></span>
+            </div>
+
+            <!-- End Date -->
+            <div class="mb-3">
+                <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                <input type="datetime-local"
+                       id="EndDate" name="EndDate"
+                       class="form-control"
+                       value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")" />
+                <span asp-validation-for="EndDate" class="text-danger small"></span>
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-4">
+                <label asp-for="Capacity" class="form-label fw-semibold"></label>
+                <input asp-for="Capacity" type="number" min="1" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Create Session</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

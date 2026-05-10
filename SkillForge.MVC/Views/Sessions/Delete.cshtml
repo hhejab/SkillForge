@@ -1,0 +1,53 @@
+@model SkillForge.API.Models.Session
+@{
+    ViewData["Title"] = "Delete Session";
+    var enrollmentCount = (int)(ViewBag.EnrollmentCount ?? 0);
+}
+
+<h2 class="mb-4 text-danger">Delete Session</h2>
+
+@if (enrollmentCount > 0)
+{
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> This session has <strong>@enrollmentCount</strong> enrolled trainee(s).
+        Deleting it will also remove their enrollment records.
+    </div>
+}
+
+<p class="lead">Are you sure you want to delete the following session?</p>
+
+<div class="card shadow-sm mb-4" style="max-width: 620px;">
+    <div class="card-header bg-danger text-white">
+        <strong>@(Model.Course?.Title ?? $"Course #{Model.CourseId}")</strong>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Instructor</dt>
+            <dd class="col-sm-8">@(Model.Instructor?.FullName ?? $"User #{Model.InstructorId}")</dd>
+
+            <dt class="col-sm-4">Room</dt>
+            <dd class="col-sm-8">@Model.Room</dd>
+
+            <dt class="col-sm-4">Start</dt>
+            <dd class="col-sm-8">@Model.StartDate.ToString("dd MMM yyyy HH:mm")</dd>
+
+            <dt class="col-sm-4">End</dt>
+            <dd class="col-sm-8">@Model.EndDate.ToString("dd MMM yyyy HH:mm")</dd>
+
+            <dt class="col-sm-4">Capacity</dt>
+            <dd class="col-sm-8">@Model.Capacity</dd>
+
+            <dt class="col-sm-4">Enrolled</dt>
+            <dd class="col-sm-8">@enrollmentCount</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="SessionId" />
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
