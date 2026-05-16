@@ -10,6 +10,7 @@ namespace SkillForge.API.Models
         public Enrollment? Enrollment { get; set; }
         public string CertificateCode { get; set; } = string.Empty;
         public DateTime IssueDate { get; set; }
-        public string VerificationStatus { get; set; } = string.Empty;
+        public int VerificationStatusId { get; set; }
+        public VerificationStatus? VerificationStatus { get; set; }
     }
 }

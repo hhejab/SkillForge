@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SkillForge.API.Models;
 
@@ -11,9 +12,11 @@ using SkillForge.API.Models;
 namespace SkillForge.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260516130418_AddPaymentStatus")]
+    partial class AddPaymentStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,15 +60,14 @@ namespace SkillForge.API.Migrations
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VerificationStatusId")
-                        .HasColumnType("int");
+                    b.Property<string>("VerificationStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CertificateId");
 
                     b.HasIndex("EnrollmentId")
                         .IsUnique();
-
-                    b.HasIndex("VerificationStatusId");
 
                     b.ToTable("Certificates");
                 });
@@ -81,6 +83,10 @@ namespace SkillForge.API.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CertificationTrack")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -92,14 +98,9 @@ namespace SkillForge.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrackId")
-                        .HasColumnType("int");
-
                     b.HasKey("CourseId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("TrackId");
 
                     b.ToTable("Courses");
                 });
@@ -134,68 +135,23 @@ namespace SkillForge.API.Migrations
                     b.Property<DateTime>("EnrollmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EnrollmentStatusId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SessionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TraineeId")
                         .HasColumnType("int");
 
                     b.HasKey("EnrollmentId");
 
-                    b.HasIndex("EnrollmentStatusId");
-
                     b.HasIndex("SessionId");
 
                     b.HasIndex("TraineeId");
 
                     b.ToTable("Enrollments");
-                });
-
-            modelBuilder.Entity("SkillForge.API.Models.EnrollmentStatus", b =>
-                {
-                    b.Property<int>("EnrollmentStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentStatusId"));
-
-                    b.Property<string>("StatusName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EnrollmentStatusId");
-
-                    b.ToTable("EnrollmentStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            EnrollmentStatusId = 1,
-                            StatusName = "Pending"
-                        },
-                        new
-                        {
-                            EnrollmentStatusId = 2,
-                            StatusName = "Approved"
-                        },
-                        new
-                        {
-                            EnrollmentStatusId = 3,
-                            StatusName = "Rejected"
-                        },
-                        new
-                        {
-                            EnrollmentStatusId = 4,
-                            StatusName = "Completed"
-                        },
-                        new
-                        {
-                            EnrollmentStatusId = 5,
-                            StatusName = "Cancelled"
-                        });
                 });
 
             modelBuilder.Entity("SkillForge.API.Models.Instructor", b =>
@@ -333,52 +289,6 @@ namespace SkillForge.API.Migrations
                     b.ToTable("Results");
                 });
 
-            modelBuilder.Entity("SkillForge.API.Models.Room", b =>
-                {
-                    b.Property<int>("RoomId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomId"));
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoomName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoomId");
-
-                    b.ToTable("Rooms");
-
-                    b.HasData(
-                        new
-                        {
-                            RoomId = 1,
-                            Capacity = 25,
-                            Location = "Building A",
-                            RoomName = "Lab 101"
-                        },
-                        new
-                        {
-                            RoomId = 2,
-                            Capacity = 25,
-                            Location = "Building A",
-                            RoomName = "Lab 102"
-                        },
-                        new
-                        {
-                            RoomId = 3,
-                            Capacity = 30,
-                            Location = "Building B",
-                            RoomName = "Room 201"
-                        });
-                });
-
             modelBuilder.Entity("SkillForge.API.Models.Session", b =>
                 {
                     b.Property<int>("SessionId")
@@ -399,8 +309,9 @@ namespace SkillForge.API.Migrations
                     b.Property<int>("InstructorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
+                    b.Property<string>("Room")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -411,49 +322,7 @@ namespace SkillForge.API.Migrations
 
                     b.HasIndex("InstructorId");
 
-                    b.HasIndex("RoomId");
-
                     b.ToTable("Sessions");
-                });
-
-            modelBuilder.Entity("SkillForge.API.Models.Track", b =>
-                {
-                    b.Property<int>("TrackId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrackId"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TrackName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TrackId");
-
-                    b.ToTable("Tracks");
-
-                    b.HasData(
-                        new
-                        {
-                            TrackId = 1,
-                            Description = "Programming and software development courses",
-                            TrackName = "Programming"
-                        },
-                        new
-                        {
-                            TrackId = 2,
-                            Description = "Database design and SQL courses",
-                            TrackName = "Database"
-                        },
-                        new
-                        {
-                            TrackId = 3,
-                            Description = "Web application development courses",
-                            TrackName = "Web Development"
-                        });
                 });
 
             modelBuilder.Entity("SkillForge.API.Models.Trainee", b =>
@@ -480,45 +349,6 @@ namespace SkillForge.API.Migrations
                     b.ToTable("Trainees");
                 });
 
-            modelBuilder.Entity("SkillForge.API.Models.VerificationStatus", b =>
-                {
-                    b.Property<int>("VerificationStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VerificationStatusId"));
-
-                    b.Property<string>("StatusName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("VerificationStatusId");
-
-                    b.ToTable("VerificationStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            VerificationStatusId = 1,
-                            StatusName = "Pending"
-                        },
-                        new
-                        {
-                            VerificationStatusId = 2,
-                            StatusName = "Valid"
-                        },
-                        new
-                        {
-                            VerificationStatusId = 3,
-                            StatusName = "Revoked"
-                        },
-                        new
-                        {
-                            VerificationStatusId = 4,
-                            StatusName = "Expired"
-                        });
-                });
-
             modelBuilder.Entity("SkillForge.API.Models.Certificate", b =>
                 {
                     b.HasOne("SkillForge.API.Models.Enrollment", "Enrollment")
@@ -527,15 +357,7 @@ namespace SkillForge.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SkillForge.API.Models.VerificationStatus", "VerificationStatus")
-                        .WithMany("Certificates")
-                        .HasForeignKey("VerificationStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Enrollment");
-
-                    b.Navigation("VerificationStatus");
                 });
 
             modelBuilder.Entity("SkillForge.API.Models.Course", b =>
@@ -546,25 +368,11 @@ namespace SkillForge.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SkillForge.API.Models.Track", "Track")
-                        .WithMany("Courses")
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Category");
-
-                    b.Navigation("Track");
                 });
 
             modelBuilder.Entity("SkillForge.API.Models.Enrollment", b =>
                 {
-                    b.HasOne("SkillForge.API.Models.EnrollmentStatus", "EnrollmentStatus")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("EnrollmentStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SkillForge.API.Models.Session", "Session")
                         .WithMany("Enrollments")
                         .HasForeignKey("SessionId")
@@ -576,8 +384,6 @@ namespace SkillForge.API.Migrations
                         .HasForeignKey("TraineeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("EnrollmentStatus");
 
                     b.Navigation("Session");
 
@@ -636,17 +442,9 @@ namespace SkillForge.API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("SkillForge.API.Models.Room", "Room")
-                        .WithMany("Sessions")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Course");
 
                     b.Navigation("Instructor");
-
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("SkillForge.API.Models.Category", b =>
@@ -668,11 +466,6 @@ namespace SkillForge.API.Migrations
                     b.Navigation("Result");
                 });
 
-            modelBuilder.Entity("SkillForge.API.Models.EnrollmentStatus", b =>
-                {
-                    b.Navigation("Enrollments");
-                });
-
             modelBuilder.Entity("SkillForge.API.Models.Instructor", b =>
                 {
                     b.Navigation("Sessions");
@@ -685,29 +478,14 @@ namespace SkillForge.API.Migrations
                     b.Navigation("Payments");
                 });
 
-            modelBuilder.Entity("SkillForge.API.Models.Room", b =>
-                {
-                    b.Navigation("Sessions");
-                });
-
             modelBuilder.Entity("SkillForge.API.Models.Session", b =>
                 {
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("SkillForge.API.Models.Track", b =>
-                {
-                    b.Navigation("Courses");
-                });
-
             modelBuilder.Entity("SkillForge.API.Models.Trainee", b =>
                 {
                     b.Navigation("Enrollments");
-                });
-
-            modelBuilder.Entity("SkillForge.API.Models.VerificationStatus", b =>
-                {
-                    b.Navigation("Certificates");
                 });
 #pragma warning restore 612, 618
         }

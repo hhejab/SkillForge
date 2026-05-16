@@ -10,7 +10,8 @@ namespace SkillForge.API.Models
         public Course? Course { get; set; }
         public int InstructorId { get; set; }
         public Instructor? Instructor { get; set; }
-        public string Room { get; set; } = string.Empty;
+        public int RoomId { get; set; }
+        public Room? Room { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }

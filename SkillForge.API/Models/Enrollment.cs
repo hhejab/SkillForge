@@ -11,7 +11,8 @@ namespace SkillForge.API.Models
         public int SessionId { get; set; }
         public Session? Session { get; set; }
         public DateTime EnrollmentDate { get; set; }
-        public string Status { get; set; } = string.Empty;
+        public int EnrollmentStatusId { get; set; }
+        public EnrollmentStatus? EnrollmentStatus { get; set; }
 
         public Result? Result { get; set; }
 
