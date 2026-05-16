@@ -1,0 +1,42 @@
+﻿@model List<SkillForge.Reporting.Models.PaymentReportDto>
+
+@{
+    ViewData["Title"] = "Payments Report";
+}
+
+<h1>Payments Report</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">
+        No payment records found.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Payment ID</th>
+                <th>Enrollment ID</th>
+                <th>Amount</th>
+                <th>Payment Date</th>
+                <th>Method</th>
+                <th>Status ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payment in Model)
+            {
+                <tr>
+                    <td>@payment.PaymentId</td>
+                    <td>@payment.EnrollmentId</td>
+                    <td>@payment.Amount.ToString("0.00")</td>
+                    <td>@payment.PaymentDate.ToShortDateString()</td>
+                    <td>@payment.PaymentMethod</td>
+                    <td>@payment.PaymentStatusId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
