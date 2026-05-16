@@ -13,6 +13,7 @@
 
         public string PaymentMethod { get; set; } = string.Empty;
 
-        public string PaymentStatus { get; set; } = string.Empty;
+        public int PaymentStatusId { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; }
     }
 }

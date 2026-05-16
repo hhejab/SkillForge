@@ -10,7 +10,8 @@ namespace SkillForge.API.Models
         public string Description { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
-        public string CertificationTrack { get; set; } = string.Empty;
+        public int TrackId { get; set; }
+        public Track? Track { get; set; }
         public int Duration { get; set; }
         public ICollection<Session>? Sessions { get; set; }
     }
