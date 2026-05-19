@@ -50,7 +50,7 @@ namespace SkillForge.MVC.Controllers
         {
             var enrollments = await _context.Enrollments
                 .Include(e => e.Trainee)
-                .Include(e => e.Session)
+                .Include(e => e.Session!)
                     .ThenInclude(s => s.Course)
                 .Include(e => e.Result)
                 .Where(e => e.SessionId == sessionId)
@@ -74,7 +74,13 @@ namespace SkillForge.MVC.Controllers
             if (instructor == null)
                 return NotFound("Instructor profile not found.");
 
-            var existingResult = await _context.Results.FirstOrDefaultAsync(r => r.EnrollmentId == enrollmentId);
+            var normalizedPassFail =
+                passFail == "true" || passFail == "True" || passFail == "Pass"
+                    ? "Pass"
+                    : "Fail";
+
+            var existingResult = await _context.Results
+                .FirstOrDefaultAsync(r => r.EnrollmentId == enrollmentId);
 
             if (existingResult == null)
             {
@@ -82,7 +88,7 @@ namespace SkillForge.MVC.Controllers
                 {
                     EnrollmentId = enrollmentId,
                     GradeOrScore = gradeOrScore,
-                    PassFail = passFail,
+                    PassFail = normalizedPassFail,
                     UpdatedByInstructorId = instructor.InstructorId,
                     UpdatedAt = DateTime.Now
                 };
@@ -92,12 +98,48 @@ namespace SkillForge.MVC.Controllers
             else
             {
                 existingResult.GradeOrScore = gradeOrScore;
-                existingResult.PassFail = passFail;
+                existingResult.PassFail = normalizedPassFail;
                 existingResult.UpdatedByInstructorId = instructor.InstructorId;
                 existingResult.UpdatedAt = DateTime.Now;
             }
 
             await _context.SaveChangesAsync();
+
+            if (normalizedPassFail == "Pass")
+            {
+                var paymentPaid = await _context.Payments
+                    .AnyAsync(p => p.EnrollmentId == enrollmentId && p.PaymentStatusId == 2);
+
+                var existingCertificate = await _context.Certificates
+                    .FirstOrDefaultAsync(c => c.EnrollmentId == enrollmentId);
+
+                if (existingCertificate != null)
+                {
+                    TempData["Success"] = $"Result saved. Certificate already exists: {existingCertificate.CertificateCode}";
+                    return RedirectToAction(nameof(MySessions));
+                }
+
+                if (paymentPaid)
+                {
+                    var certificateCode = $"SF-CERT-{DateTime.Now.Year}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
+
+                    _context.Certificates.Add(new Certificate
+                    {
+                        EnrollmentId = enrollmentId,
+                        CertificateCode = certificateCode,
+                        IssueDate = DateTime.Now,
+                        VerificationStatusId = 2
+                    });
+
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = $"Result saved and certificate generated: {certificateCode}";
+                    return RedirectToAction(nameof(MySessions));
+                }
+
+                TempData["Success"] = "Result saved. Certificate will be generated after payment is completed.";
+                return RedirectToAction(nameof(MySessions));
+            }
 
             TempData["Success"] = "Result saved successfully.";
             return RedirectToAction(nameof(MySessions));

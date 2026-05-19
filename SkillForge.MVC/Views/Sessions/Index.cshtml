@@ -1,65 +1,48 @@
 ﻿@model IEnumerable<SkillForge.API.Models.Session>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Session Scheduling";
 }
 
-<h1>Index</h1>
+<div class="page-card">
+    <h2 class="page-title">Session Scheduling</h2>
+    <p class="page-subtitle">Manage scheduled course sessions, assigned instructors, rooms, and capacity.</p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Course)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Instructor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Room)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Capacity)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Instructor.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Room.RoomName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SessionId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add New Session</a>
+    </p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Instructor</th>
+                    <th>Room</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Capacity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Course?.Title</strong></td>
+                        <td>@item.Instructor?.FullName</td>
+                        <td>@item.Room?.RoomName</td>
+                        <td>@item.StartDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                        <td>@item.EndDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                        <td>@item.Capacity</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.SessionId" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.SessionId" class="btn btn-sm btn-secondary">View</a>
+                            <a asp-action="Delete" asp-route-id="@item.SessionId" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

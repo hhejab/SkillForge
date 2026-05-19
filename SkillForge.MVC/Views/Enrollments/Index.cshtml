@@ -1,53 +1,51 @@
 ﻿@model IEnumerable<SkillForge.API.Models.Enrollment>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Enrollment Management";
 }
 
-<h1>Index</h1>
+<div class="page-card">
+    <h2 class="page-title">Enrollment Management</h2>
+    <p class="page-subtitle">Manage trainee enrollments, sessions, and enrollment statuses.</p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Trainee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Session)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EnrollmentDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EnrollmentStatus)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Trainee.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Session.SessionId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EnrollmentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EnrollmentStatus.StatusName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EnrollmentId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EnrollmentId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EnrollmentId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add New Enrollment</a>
+    </p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Trainee ID</th>
+                    <th>Trainee</th>
+                    <th>Session ID</th>
+                    <th>Enrollment Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TraineeId</td>
+                        <td>@(item.Trainee?.Email)</td>
+                        <td>@(item.Session?.SessionId)</td>
+                        <td>@item.EnrollmentDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                        <td>
+                            <span class="badge bg-primary">
+                                @(item.EnrollmentStatus?.StatusName)
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.EnrollmentId" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.EnrollmentId" class="btn btn-sm btn-secondary">View</a>
+                            <a asp-action="Delete" asp-route-id="@item.EnrollmentId" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,53 +1,48 @@
 ﻿@model IEnumerable<SkillForge.API.Models.Certificate>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Certificate Management";
 }
 
-<h1>Index</h1>
+<div class="page-card">
+    <h2 class="page-title">Certificate Management</h2>
+    <p class="page-subtitle">Manage generated certificates, reference numbers, issue dates, and verification status.</p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Enrollment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CertificateCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IssueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VerificationStatus)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Enrollment.EnrollmentId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CertificateCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IssueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VerificationStatus.StatusName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CertificateId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CertificateId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CertificateId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Add New Certificate</a>
+    </p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Enrollment ID</th>
+                    <th>Certificate Reference</th>
+                    <th>Issue Date</th>
+                    <th>Verification Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Enrollment?.EnrollmentId</td>
+                        <td><strong>@item.CertificateCode</strong></td>
+                        <td>@item.IssueDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <span class="badge bg-success">
+                                @item.VerificationStatus?.StatusName
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.CertificateId" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.CertificateId" class="btn btn-sm btn-secondary">View</a>
+                            <a asp-action="Delete" asp-route-id="@item.CertificateId" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

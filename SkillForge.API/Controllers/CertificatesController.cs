@@ -50,16 +50,17 @@ namespace SkillForge.API.Controllers
         {
             var certificate = await _context.Certificates
                 .Include(c => c.Enrollment)
-                    .ThenInclude(e => e.Trainee)
+                    .ThenInclude(e => e!.Trainee)
                 .Include(c => c.Enrollment)
-                    .ThenInclude(e => e.Session)
-                        .ThenInclude(s => s.Course)
+                    .ThenInclude(e => e!.Session)
+                        .ThenInclude(s => s!.Course)
                 .Include(c => c.VerificationStatus)
                 .FirstOrDefaultAsync(c =>
-                    c.Enrollment.TraineeId == traineeId &&
-                    c.CertificateCode == certificateCode);
+                    c.CertificateCode == certificateCode &&
+                    c.Enrollment != null &&
+                    c.Enrollment.TraineeId == traineeId);
 
-            if (certificate == null)
+            if (certificate == null || certificate.Enrollment == null)
             {
                 return NotFound(new
                 {
@@ -67,14 +68,28 @@ namespace SkillForge.API.Controllers
                 });
             }
 
+            var enrollment = certificate.Enrollment;
+            var trainee = enrollment.Trainee;
+            var session = enrollment.Session;
+            var course = session?.Course;
+            var verification = certificate.VerificationStatus;
+
+            if (trainee == null || session == null || course == null || verification == null)
+            {
+                return NotFound(new
+                {
+                    message = "Certificate has incomplete related data."
+                });
+            }
+
             return Ok(new
             {
-                traineeName = certificate.Enrollment.Trainee.FullName,
-                traineeId = certificate.Enrollment.TraineeId,
+                traineeName = trainee.FullName,
+                traineeId = enrollment.TraineeId,
                 certificateCode = certificate.CertificateCode,
-                course = certificate.Enrollment.Session.Course.Title,
+                course = course.Title,
                 issueDate = certificate.IssueDate,
-                status = certificate.VerificationStatus.StatusName
+                status = verification.StatusName
             });
         }
 

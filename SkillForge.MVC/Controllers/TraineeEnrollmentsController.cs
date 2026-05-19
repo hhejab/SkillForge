@@ -46,7 +46,8 @@ namespace SkillForge.MVC.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var trainee = await _context.Trainees.FirstOrDefaultAsync(t => t.UserId == user.Id);
+            var trainee = await _context.Trainees
+                .FirstOrDefaultAsync(t => t.UserId == user.Id);
 
             if (trainee == null)
                 return NotFound("Trainee profile not found.");
@@ -67,7 +68,8 @@ namespace SkillForge.MVC.Controllers
                 return RedirectToAction(nameof(AvailableSessions));
             }
 
-            var enrolledCount = await _context.Enrollments.CountAsync(e => e.SessionId == sessionId);
+            var enrolledCount = await _context.Enrollments
+                .CountAsync(e => e.SessionId == sessionId);
 
             if (enrolledCount >= session.Capacity)
             {
@@ -89,7 +91,25 @@ namespace SkillForge.MVC.Controllers
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
 
-            var newCount = await _context.Enrollments.CountAsync(e => e.SessionId == sessionId);
+            var existingPayment = await _context.Payments
+                .AnyAsync(p => p.EnrollmentId == enrollment.EnrollmentId);
+
+            if (!existingPayment)
+            {
+                _context.Payments.Add(new Payment
+                {
+                    EnrollmentId = enrollment.EnrollmentId,
+                    Amount = 75.000m,
+                    PaymentDate = DateTime.Now,
+                    PaymentMethod = "Pending",
+                    PaymentStatusId = 1
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
+            var newCount = await _context.Enrollments
+                .CountAsync(e => e.SessionId == sessionId);
 
             await _hubContext.Clients.All.SendAsync("EnrollmentUpdated", sessionId, newCount);
 
@@ -104,13 +124,14 @@ namespace SkillForge.MVC.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var trainee = await _context.Trainees.FirstOrDefaultAsync(t => t.UserId == user.Id);
+            var trainee = await _context.Trainees
+                .FirstOrDefaultAsync(t => t.UserId == user.Id);
 
             if (trainee == null)
                 return NotFound("Trainee profile not found.");
 
             var enrollments = await _context.Enrollments
-                .Include(e => e.Session)
+                .Include(e => e.Session!)
                     .ThenInclude(s => s.Course)
                 .Include(e => e.EnrollmentStatus)
                 .Where(e => e.TraineeId == trainee.TraineeId)
