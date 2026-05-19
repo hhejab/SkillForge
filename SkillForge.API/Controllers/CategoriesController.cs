@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SkillForge.API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SkillForge.API.Controllers
 {
+    [Authorize(Roles = "TrainingCoordinator")]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase

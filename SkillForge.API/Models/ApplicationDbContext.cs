@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace SkillForge.API.Models
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -30,6 +30,19 @@ namespace SkillForge.API.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Trainee>()
+                .HasOne(t => t.User)
+                .WithOne()
+                .HasForeignKey<Trainee>(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Instructor>()
+                .HasOne(i => i.User)
+                .WithOne()
+                .HasForeignKey<Instructor>(i => i.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
