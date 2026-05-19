@@ -27,7 +27,7 @@ namespace SkillForge.API.Controllers
                     courseTitle = c.Title,
                     category = c.Category != null ? c.Category.CategoryName : "",
                     totalEnrollments = _context.Enrollments
-                        .Count(e => e.Session.CourseId == c.CourseId)
+                        .Count(e => e.Session != null && e.Session.CourseId == c.CourseId)
                 })
                 .ToListAsync();
 

@@ -1,48 +1,30 @@
 ﻿@model SkillForge.API.Models.Payment
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Payment Details";
 }
 
-<h1>Details</h1>
+<div class="page-card">
+    <h2 class="page-title">Payment Details</h2>
+    <p class="page-subtitle">View payment amount, method, date, and status.</p>
 
-<div>
-    <h4>Payment</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Enrollment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Enrollment.EnrollmentId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Amount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentMethod)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentMethod)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentStatus.StatusName)
-        </dd>
+        <dt class="col-sm-3">Enrollment ID</dt>
+        <dd class="col-sm-9">@(Model.Enrollment?.EnrollmentId)</dd>
+
+        <dt class="col-sm-3">Amount</dt>
+        <dd class="col-sm-9">@Model.Amount.ToString("0.000") BHD</dd>
+
+        <dt class="col-sm-3">Payment Date</dt>
+        <dd class="col-sm-9">@Model.PaymentDate.ToString("dd MMM yyyy")</dd>
+
+        <dt class="col-sm-3">Payment Method</dt>
+        <dd class="col-sm-9">@Model.PaymentMethod</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@(Model.PaymentStatus?.StatusName)</dd>
     </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PaymentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <a asp-action="Edit" asp-route-id="@Model.PaymentId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

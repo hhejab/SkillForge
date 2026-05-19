@@ -1,27 +1,109 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using SkillForge.API.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext DbContext
+
+@{
     ViewData["Title"] = "Dashboard";
+
+    Trainee? currentTrainee = null;
+
+    if (User.IsInRole("Trainee"))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+
+        if (currentUser != null)
+        {
+            currentTrainee = await DbContext.Trainees
+                .FirstOrDefaultAsync(t => t.UserId == currentUser.Id);
+        }
+    }
 }
 
-<div class="container mt-4">
+<div class="dashboard-hero">
     <h1>SkillForge Dashboard</h1>
 
     @if (User.IsInRole("TrainingCoordinator"))
     {
-        <h3>Training Coordinator</h3>
-        <p>Manage courses, sessions, instructors, rooms, enrollments, payments, and certificates.</p>
+        <p>Manage courses, sessions, instructors, rooms, enrollments, payments, and certificates from one place.</p>
     }
     else if (User.IsInRole("Instructor"))
     {
-        <h3>Instructor</h3>
-        <p>View your sessions and record trainee results.</p>
+        <p>View assigned sessions, manage trainees, and record trainee results.</p>
     }
     else if (User.IsInRole("Trainee"))
     {
-        <h3>Trainee</h3>
-        <p>Browse sessions, enroll in courses, view results, and check certificate progress.</p>
+        <p>Browse available sessions, enroll in courses, and track your learning progress.</p>
     }
     else
     {
-        <p>Please login to use the system.</p>
+        <p>Welcome to SkillForge. Please login to continue.</p>
+    }
+</div>
+
+@if (User.IsInRole("Trainee") && currentTrainee != null)
+{
+    <div class="alert alert-info shadow-sm">
+        Your Trainee ID is: <strong>@currentTrainee.TraineeId</strong>
+    </div>
+}
+
+<div class="dashboard-grid">
+    @if (User.IsInRole("TrainingCoordinator"))
+    {
+        <div class="dashboard-card">
+            <h4>Course Management</h4>
+            <p>Create and manage training courses, categories, and tracks.</p>
+            <a asp-controller="Courses" asp-action="Index" class="btn btn-primary btn-sm">Open Courses</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Session Scheduling</h4>
+            <p>Schedule sessions, assign rooms, and connect instructors.</p>
+            <a asp-controller="Sessions" asp-action="Index" class="btn btn-primary btn-sm">Open Sessions</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Payments</h4>
+            <p>Monitor trainee payments and payment statuses.</p>
+            <a asp-controller="Payments" asp-action="Index" class="btn btn-primary btn-sm">Open Payments</a>
+        </div>
+    }
+
+    @if (User.IsInRole("Instructor"))
+    {
+        <div class="dashboard-card">
+            <h4>My Sessions</h4>
+            <p>View your assigned sessions and enrolled trainees.</p>
+            <a asp-controller="InstructorSessions" asp-action="MySessions" class="btn btn-primary btn-sm">Open Sessions</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Results</h4>
+            <p>Record pass/fail results and update trainee performance.</p>
+            <a asp-controller="InstructorSessions" asp-action="MySessions" class="btn btn-primary btn-sm">Open Results</a>
+        </div>
+    }
+
+    @if (User.IsInRole("Trainee"))
+    {
+        <div class="dashboard-card">
+            <h4>Available Sessions</h4>
+            <p>Browse upcoming sessions and enroll in training courses.</p>
+            <a asp-controller="TraineeEnrollments" asp-action="AvailableSessions" class="btn btn-primary btn-sm">Browse Sessions</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>My Enrollments</h4>
+            <p>Track your enrolled sessions and enrollment statuses.</p>
+            <a asp-controller="TraineeEnrollments" asp-action="MyEnrollments" class="btn btn-primary btn-sm">View Enrollments</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>My Payments</h4>
+            <p>View payment status and complete pending course payments.</p>
+            <a asp-controller="TraineePayments" asp-action="MyPayments" class="btn btn-primary btn-sm">View Payments</a>
+        </div>
     }
 </div>

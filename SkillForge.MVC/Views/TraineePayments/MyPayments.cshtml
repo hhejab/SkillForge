@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SkillForge.API.Models.Payment>
+
+@{
+    ViewData["Title"] = "My Payments";
+}
+
+<div class="page-card">
+    <h2 class="page-title">My Payments</h2>
+    <p class="page-subtitle">View your course payments and complete pending payments using card details.</p>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var payment in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@payment.Enrollment?.Session?.Course?.Title</strong>
+                        </td>
+                        <td>@payment.Amount.ToString("0.000") BHD</td>
+                        <td>@payment.PaymentDate.ToString("dd MMM yyyy")</td>
+                        <td>@payment.PaymentMethod</td>
+                        <td>
+                            @if (payment.PaymentStatusId == 2)
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    @payment.PaymentStatus?.StatusName
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (payment.PaymentStatusId == 2)
+                            {
+                                <span class="text-success">Completed</span>
+                            }
+                            else
+                            {
+                                <a asp-action="Pay" asp-route-id="@payment.PaymentId" class="btn btn-primary btn-sm">
+                                    Pay Now
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

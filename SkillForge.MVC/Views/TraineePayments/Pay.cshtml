@@ -1,0 +1,78 @@
+﻿@model SkillForge.MVC.Models.CardPaymentViewModel
+
+@{
+    ViewData["Title"] = "Pay Course Fee";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">Card Payment</h3>
+            </div>
+
+            <div class="card-body p-4">
+                <p class="text-muted">
+                    Enter card details to complete this project payment transaction.
+                </p>
+
+                <div class="alert alert-info">
+                    Amount to pay: <strong>@Model.Amount.ToString("0.000") BHD</strong>
+                </div>
+
+                <form asp-action="Pay" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="PaymentId" />
+                    <input type="hidden" asp-for="Amount" />
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CardholderName" class="form-label">Name on Card</label>
+                        <input asp-for="CardholderName" class="form-control" placeholder="Example: Ahmed Ali" />
+                        <span asp-validation-for="CardholderName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CardNumber" class="form-label">Card Number</label>
+                        <input asp-for="CardNumber" class="form-control" placeholder="16 digits" maxlength="16" />
+                        <span asp-validation-for="CardNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ExpiryMonth" class="form-label">Expiry Month</label>
+                            <input asp-for="ExpiryMonth" class="form-control" placeholder="MM" />
+                            <span asp-validation-for="ExpiryMonth" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ExpiryYear" class="form-label">Expiry Year</label>
+                            <input asp-for="ExpiryYear" class="form-control" placeholder="YYYY" />
+                            <span asp-validation-for="ExpiryYear" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CVV" class="form-label">CVV</label>
+                            <input asp-for="CVV" class="form-control" placeholder="123" maxlength="3" />
+                            <span asp-validation-for="CVV" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Complete Payment
+                    </button>
+
+                    <a asp-action="MyPayments" class="btn btn-secondary w-100 mt-2">
+                        Back to My Payments
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

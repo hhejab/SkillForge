@@ -1,42 +1,30 @@
 ﻿@model SkillForge.API.Models.Enrollment
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Enrollment Details";
 }
 
-<h1>Details</h1>
+<div class="page-card">
+    <h2 class="page-title">Enrollment Details</h2>
+    <p class="page-subtitle">View trainee enrollment details and current enrollment status.</p>
 
-<div>
-    <h4>Enrollment</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Trainee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Trainee.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Session)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Session.SessionId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EnrollmentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EnrollmentDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EnrollmentStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EnrollmentStatus.StatusName)
-        </dd>
+        <dt class="col-sm-3">Trainee</dt>
+        <dd class="col-sm-9">@(Model.Trainee?.Email)</dd>
+
+        <dt class="col-sm-3">Trainee ID</dt>
+        <dd class="col-sm-9">@Model.TraineeId</dd>
+
+        <dt class="col-sm-3">Session ID</dt>
+        <dd class="col-sm-9">@(Model.Session?.SessionId)</dd>
+
+        <dt class="col-sm-3">Enrollment Date</dt>
+        <dd class="col-sm-9">@Model.EnrollmentDate.ToString("dd MMM yyyy hh:mm tt")</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@(Model.EnrollmentStatus?.StatusName)</dd>
     </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.EnrollmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <a asp-action="Edit" asp-route-id="@Model.EnrollmentId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

@@ -4,59 +4,79 @@
     ViewData["Title"] = "Available Sessions";
 }
 
-<h2>Available Sessions</h2>
+<div class="page-card">
+    <h2 class="page-title">Available Sessions</h2>
+    <p class="page-subtitle">Browse sessions, check live availability, and enroll instantly.</p>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Course</th>
-            <th>Instructor</th>
-            <th>Room</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Capacity</th>
-            <th>Enrolled</th>
-            <th>Remaining</th>
-            <th></th>
-        </tr>
-    </thead>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Instructor</th>
+                    <th>Room</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Capacity</th>
+                    <th>Enrolled</th>
+                    <th>Remaining</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-    <tbody>
-        @foreach (var session in Model)
-        {
-            var enrolledCount = session.Enrollments?.Count ?? 0;
-            var remaining = session.Capacity - enrolledCount;
+            <tbody>
+                @foreach (var session in Model)
+                {
+                    var enrolledCount = session.Enrollments?.Count ?? 0;
+                    var remaining = session.Capacity - enrolledCount;
 
-            <tr>
-                <td>@session.Course?.Title</td>
-                <td>@session.Instructor?.FullName</td>
-                <td>@session.Room?.RoomName</td>
-                <td>@session.StartDate</td>
-                <td>@session.EndDate</td>
-                <td>@session.Capacity</td>
-                <td id="enrolled-@session.SessionId">@enrolledCount</td>
-                <td id="remaining-@session.SessionId">@remaining</td>
-                <td>
-                    <form asp-action="Enroll" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="sessionId" value="@session.SessionId" />
-                        <button type="submit" class="btn btn-primary btn-sm">Enroll</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    <tr>
+                        <td>
+                            <strong>@session.Course?.Title</strong>
+                        </td>
+                        <td>@session.Instructor?.FullName</td>
+                        <td>@session.Room?.RoomName</td>
+                        <td>@session.StartDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                        <td>@session.EndDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                        <td>@session.Capacity</td>
+
+                        <td>
+                            <span id="enrolled-@session.SessionId" class="badge bg-primary">
+                                @enrolledCount
+                            </span>
+                        </td>
+
+                        <td>
+                            <span id="remaining-@session.SessionId" class="badge bg-success">
+                                @remaining
+                            </span>
+                        </td>
+
+                        <td>
+                            <form asp-action="Enroll" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="sessionId" value="@session.SessionId" />
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Enroll
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script src="/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
