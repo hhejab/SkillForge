@@ -1,0 +1,44 @@
+﻿@model SkillForge.MVC.Controllers.CertificateLookupResult?
+
+@{
+    ViewData["Title"] = "Certificate Lookup";
+}
+
+<h2>Certificate Lookup</h2>
+
+<form asp-action="Index" method="post" class="mb-4">
+    <div class="mb-3">
+        <label class="form-label">Trainee ID</label>
+        <input type="number" name="traineeId" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Certificate Reference Number</label>
+        <input type="text" name="certificateCode" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (Model != null)
+{
+    <div class="card">
+        <div class="card-header">
+            Certificate Result
+        </div>
+
+        <div class="card-body">
+            <p><strong>Trainee:</strong> @Model.TraineeName</p>
+            <p><strong>Trainee ID:</strong> @Model.TraineeId</p>
+            <p><strong>Certificate Code:</strong> @Model.CertificateCode</p>
+            <p><strong>Course:</strong> @Model.Course</p>
+            <p><strong>Issue Date:</strong> @Model.IssueDate.ToShortDateString()</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+        </div>
+    </div>
+}

@@ -1,8 +1,27 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h1>SkillForge Dashboard</h1>
+
+    @if (User.IsInRole("TrainingCoordinator"))
+    {
+        <h3>Training Coordinator</h3>
+        <p>Manage courses, sessions, instructors, rooms, enrollments, payments, and certificates.</p>
+    }
+    else if (User.IsInRole("Instructor"))
+    {
+        <h3>Instructor</h3>
+        <p>View your sessions and record trainee results.</p>
+    }
+    else if (User.IsInRole("Trainee"))
+    {
+        <h3>Trainee</h3>
+        <p>Browse sessions, enroll in courses, view results, and check certificate progress.</p>
+    }
+    else
+    {
+        <p>Please login to use the system.</p>
+    }
 </div>

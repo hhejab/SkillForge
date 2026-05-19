@@ -1,48 +1,27 @@
-﻿@model List<SkillForge.Reporting.Models.EnrollmentReportDto>
+﻿@model IEnumerable<SkillForge.Reporting.Models.EnrollmentReportDto>
 
 @{
-    ViewData["Title"] = "Enrollments Report";
+    ViewData["Title"] = "Enrollment Report";
 }
 
-<h1>Enrollments Report</h1>
+<h2>Enrollment Report</h2>
 
-<p class="text-muted">
-    This report displays enrollment records retrieved from the SkillForge API.
-</p>
-
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-info">
-        No enrollment records found.
-    </div>
-}
-else
-{
-    <div class="mb-3">
-        <strong>Total Enrollments:</strong> @Model.Count
-    </div>
-
-    <table class="table table-bordered table-striped">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Category</th>
+            <th>Total Enrollments</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>Enrollment ID</th>
-                <th>Trainee ID</th>
-                <th>Session ID</th>
-                <th>Enrollment Date</th>
-                <th>Status ID</th>
+                <td>@item.CourseTitle</td>
+                <td>@item.Category</td>
+                <td>@item.TotalEnrollments</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var enrollment in Model)
-            {
-                <tr>
-                    <td>@enrollment.EnrollmentId</td>
-                    <td>@enrollment.TraineeId</td>
-                    <td>@enrollment.SessionId</td>
-                    <td>@enrollment.EnrollmentDate.ToShortDateString()</td>
-                    <td>@enrollment.EnrollmentStatusId</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
