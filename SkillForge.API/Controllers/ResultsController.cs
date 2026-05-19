@@ -10,50 +10,50 @@ using System.Threading.Tasks;
 
 namespace SkillForge.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Instructor,TrainingCoordinator")]
     [Route("api/[controller]")]
     [ApiController]
-    public class CertificatesController : ControllerBase
+    public class ResultsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public CertificatesController(ApplicationDbContext context)
+        public ResultsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Certificates
+        // GET: api/Results
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Certificate>>> GetCertificates()
+        public async Task<ActionResult<IEnumerable<Result>>> GetResults()
         {
-            return await _context.Certificates.ToListAsync();
+            return await _context.Results.ToListAsync();
         }
 
-        // GET: api/Certificates/5
+        // GET: api/Results/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Certificate>> GetCertificate(int id)
+        public async Task<ActionResult<Result>> GetResult(int id)
         {
-            var certificate = await _context.Certificates.FindAsync(id);
+            var result = await _context.Results.FindAsync(id);
 
-            if (certificate == null)
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return certificate;
+            return result;
         }
 
-        // PUT: api/Certificates/5
+        // PUT: api/Results/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCertificate(int id, Certificate certificate)
+        public async Task<IActionResult> PutResult(int id, Result result)
         {
-            if (id != certificate.CertificateId)
+            if (id != result.ResultId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(certificate).State = EntityState.Modified;
+            _context.Entry(result).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +61,7 @@ namespace SkillForge.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CertificateExists(id))
+                if (!ResultExists(id))
                 {
                     return NotFound();
                 }
@@ -74,36 +74,36 @@ namespace SkillForge.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Certificates
+        // POST: api/Results
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Certificate>> PostCertificate(Certificate certificate)
+        public async Task<ActionResult<Result>> PostResult(Result result)
         {
-            _context.Certificates.Add(certificate);
+            _context.Results.Add(result);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCertificate", new { id = certificate.CertificateId }, certificate);
+            return CreatedAtAction("GetResult", new { id = result.ResultId }, result);
         }
 
-        // DELETE: api/Certificates/5
+        // DELETE: api/Results/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCertificate(int id)
+        public async Task<IActionResult> DeleteResult(int id)
         {
-            var certificate = await _context.Certificates.FindAsync(id);
-            if (certificate == null)
+            var result = await _context.Results.FindAsync(id);
+            if (result == null)
             {
                 return NotFound();
             }
 
-            _context.Certificates.Remove(certificate);
+            _context.Results.Remove(result);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CertificateExists(int id)
+        private bool ResultExists(int id)
         {
-            return _context.Certificates.Any(e => e.CertificateId == id);
+            return _context.Results.Any(e => e.ResultId == id);
         }
     }
 }
