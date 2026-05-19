@@ -29,6 +29,33 @@
                     </ul>
                 </div>
             </div>
+            <ul class="navbar-nav ms-auto">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <span class="nav-link text-dark">
+                            Hello, @User.Identity.Name
+                        </span>
+                    </li>
+
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-link nav-link text-dark">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
+                            Login
+                        </a>
+                    </li>
+                }
+            </ul>
         </nav>
     </header>
     <div class="container">
