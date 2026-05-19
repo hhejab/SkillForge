@@ -16,7 +16,7 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<table class="table table-bordered">
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Course</th>
@@ -25,12 +25,18 @@
             <th>Start</th>
             <th>End</th>
             <th>Capacity</th>
+            <th>Enrolled</th>
+            <th>Remaining</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var session in Model)
         {
+            var enrolledCount = session.Enrollments?.Count ?? 0;
+            var remaining = session.Capacity - enrolledCount;
+
             <tr>
                 <td>@session.Course?.Title</td>
                 <td>@session.Instructor?.FullName</td>
@@ -38,6 +44,8 @@
                 <td>@session.StartDate</td>
                 <td>@session.EndDate</td>
                 <td>@session.Capacity</td>
+                <td id="enrolled-@session.SessionId">@enrolledCount</td>
+                <td id="remaining-@session.SessionId">@remaining</td>
                 <td>
                     <form asp-action="Enroll" method="post">
                         @Html.AntiForgeryToken()
@@ -49,3 +57,37 @@
         }
     </tbody>
 </table>
+
+<script src="/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/enrollmentHub")
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("EnrollmentUpdated", function (sessionId, newCount) {
+        console.log("SignalR update received:", sessionId, newCount);
+
+        const enrolledCell = document.getElementById("enrolled-" + sessionId);
+        const remainingCell = document.getElementById("remaining-" + sessionId);
+
+        if (enrolledCell) {
+            enrolledCell.innerText = newCount;
+        }
+
+        if (remainingCell) {
+            const row = remainingCell.closest("tr");
+            const capacity = parseInt(row.children[5].innerText);
+            remainingCell.innerText = capacity - newCount;
+        }
+    });
+
+    connection.start()
+        .then(function () {
+            console.log("SignalR connected.");
+        })
+        .catch(function (err) {
+            console.error("SignalR connection error:", err.toString());
+        });
+</script>

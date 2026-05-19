@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SkillForge.API.Models;
+using SkillForge.MVC.Hubs;
 
 namespace SkillForge.MVC.Controllers
 {
@@ -11,11 +13,16 @@ namespace SkillForge.MVC.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<EnrollmentHub> _hubContext;
 
-        public TraineeEnrollmentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public TraineeEnrollmentsController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            IHubContext<EnrollmentHub> hubContext)
         {
             _context = context;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> AvailableSessions()
@@ -24,6 +31,7 @@ namespace SkillForge.MVC.Controllers
                 .Include(s => s.Course)
                 .Include(s => s.Instructor)
                 .Include(s => s.Room)
+                .Include(s => s.Enrollments)
                 .ToListAsync();
 
             return View(sessions);
@@ -67,7 +75,8 @@ namespace SkillForge.MVC.Controllers
                 return RedirectToAction(nameof(AvailableSessions));
             }
 
-            var pendingStatus = await _context.EnrollmentStatuses.FirstOrDefaultAsync(s => s.StatusName == "Pending");
+            var pendingStatus = await _context.EnrollmentStatuses
+                .FirstOrDefaultAsync(s => s.StatusName == "Pending");
 
             var enrollment = new Enrollment
             {
@@ -79,6 +88,10 @@ namespace SkillForge.MVC.Controllers
 
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
+
+            var newCount = await _context.Enrollments.CountAsync(e => e.SessionId == sessionId);
+
+            await _hubContext.Clients.All.SendAsync("EnrollmentUpdated", sessionId, newCount);
 
             TempData["Success"] = "Enrollment submitted successfully.";
             return RedirectToAction(nameof(MyEnrollments));
