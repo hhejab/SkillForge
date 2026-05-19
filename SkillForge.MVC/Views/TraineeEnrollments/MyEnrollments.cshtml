@@ -1,0 +1,31 @@
+﻿@model IEnumerable<SkillForge.API.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "My Enrollments";
+}
+
+<h2>My Enrollments</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Session Start</th>
+            <th>Session End</th>
+            <th>Status</th>
+            <th>Enrollment Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var enrollment in Model)
+        {
+            <tr>
+                <td>@enrollment.Session?.Course?.Title</td>
+                <td>@enrollment.Session?.StartDate</td>
+                <td>@enrollment.Session?.EndDate</td>
+                <td>@enrollment.EnrollmentStatus?.StatusName</td>
+                <td>@enrollment.EnrollmentDate</td>
+            </tr>
+        }
+    </tbody>
+</table>

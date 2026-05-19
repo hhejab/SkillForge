@@ -1,0 +1,49 @@
+﻿@model SkillForge.API.Models.Certificate
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Certificate</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CertificateId" />
+            <div class="form-group">
+                <label asp-for="EnrollmentId" class="control-label"></label>
+                <select asp-for="EnrollmentId" class="form-control" asp-items="ViewBag.EnrollmentId"></select>
+                <span asp-validation-for="EnrollmentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CertificateCode" class="control-label"></label>
+                <input asp-for="CertificateCode" class="form-control" />
+                <span asp-validation-for="CertificateCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IssueDate" class="control-label"></label>
+                <input asp-for="IssueDate" class="form-control" />
+                <span asp-validation-for="IssueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VerificationStatusId" class="control-label"></label>
+                <select asp-for="VerificationStatusId" class="form-control" asp-items="ViewBag.VerificationStatusId"></select>
+                <span asp-validation-for="VerificationStatusId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

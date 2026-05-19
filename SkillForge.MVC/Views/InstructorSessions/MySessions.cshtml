@@ -1,0 +1,44 @@
+﻿@model IEnumerable<SkillForge.API.Models.Session>
+
+@{
+    ViewData["Title"] = "My Sessions";
+}
+
+<h2>My Sessions</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Room</th>
+            <th>Instructor</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Capacity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var session in Model)
+        {
+            <tr>
+                <td>@session.Course?.Title</td>
+                <td>@session.Room?.RoomName</td>
+                <td>@session.Instructor?.FullName</td>
+                <td>@session.StartDate</td>
+                <td>@session.EndDate</td>
+                <td>@session.Capacity</td>
+                <td>
+                    <a asp-action="Trainees" asp-route-sessionId="@session.SessionId" class="btn btn-primary btn-sm">
+                        View Trainees
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

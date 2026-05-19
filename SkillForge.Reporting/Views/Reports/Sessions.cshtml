@@ -1,54 +1,35 @@
-﻿@model List<SkillForge.Reporting.Models.SessionReportDto>
+﻿@model IEnumerable<SkillForge.Reporting.Models.SessionReportDto>
 
 @{
     ViewData["Title"] = "Sessions Report";
 }
 
-<h1>Sessions Report</h1>
+<h2>Sessions Report</h2>
 
-<p class="text-muted">
-    This report displays session records retrieved from the SkillForge API.
-</p>
-
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-info">
-        No session records found.
-    </div>
-}
-else
-{
-    <div class="mb-3">
-        <strong>Total Sessions:</strong> @Model.Count
-        <br />
-        <strong>Total Capacity:</strong> @Model.Sum(s => s.Capacity)
-    </div>
-
-    <table class="table table-bordered table-striped">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Instructor</th>
+            <th>Room</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Capacity</th>
+            <th>Enrolled</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>Session ID</th>
-                <th>Course ID</th>
-                <th>Instructor ID</th>
-                <th>Room ID</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Capacity</th>
+                <td>@item.CourseTitle</td>
+                <td>@item.InstructorName</td>
+                <td>@item.RoomName</td>
+                <td>@item.StartDate</td>
+                <td>@item.EndDate</td>
+                <td>@item.Capacity</td>
+                <td>@item.EnrolledCount</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var session in Model)
-            {
-                <tr>
-                    <td>@session.SessionId</td>
-                    <td>@session.CourseId</td>
-                    <td>@session.InstructorId</td>
-                    <td>@session.RoomId</td>
-                    <td>@session.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@session.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@session.Capacity</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>

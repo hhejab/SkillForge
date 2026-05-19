@@ -1,0 +1,53 @@
+﻿@model IEnumerable<SkillForge.API.Models.Certificate>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CertificateCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IssueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VerificationStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Enrollment.EnrollmentId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CertificateCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IssueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VerificationStatus.StatusName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CertificateId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CertificateId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CertificateId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

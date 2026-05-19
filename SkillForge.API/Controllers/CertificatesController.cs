@@ -43,6 +43,41 @@ namespace SkillForge.API.Controllers
             return certificate;
         }
 
+        // GET: api/Certificates/verify?traineeId=1&certificateCode=SF-CERT-2026-0001
+        [AllowAnonymous]
+        [HttpGet("verify")]
+        public async Task<IActionResult> VerifyCertificate(int traineeId, string certificateCode)
+        {
+            var certificate = await _context.Certificates
+                .Include(c => c.Enrollment)
+                    .ThenInclude(e => e.Trainee)
+                .Include(c => c.Enrollment)
+                    .ThenInclude(e => e.Session)
+                        .ThenInclude(s => s.Course)
+                .Include(c => c.VerificationStatus)
+                .FirstOrDefaultAsync(c =>
+                    c.Enrollment.TraineeId == traineeId &&
+                    c.CertificateCode == certificateCode);
+
+            if (certificate == null)
+            {
+                return NotFound(new
+                {
+                    message = "Certificate not found."
+                });
+            }
+
+            return Ok(new
+            {
+                traineeName = certificate.Enrollment.Trainee.FullName,
+                traineeId = certificate.Enrollment.TraineeId,
+                certificateCode = certificate.CertificateCode,
+                course = certificate.Enrollment.Session.Course.Title,
+                issueDate = certificate.IssueDate,
+                status = certificate.VerificationStatus.StatusName
+            });
+        }
+
         // PUT: api/Certificates/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

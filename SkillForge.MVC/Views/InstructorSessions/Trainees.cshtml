@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SkillForge.API.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Session Trainees";
+}
+
+<h2>Session Trainees</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Trainee</th>
+            <th>Course</th>
+            <th>Current Result</th>
+            <th>Record Result</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var enrollment in Model)
+        {
+            <tr>
+                <td>@enrollment.Trainee?.FullName</td>
+                <td>@enrollment.Session?.Course?.Title</td>
+                <td>
+                    @if (enrollment.Result != null)
+                    {
+                        <span>@enrollment.Result.GradeOrScore - @enrollment.Result.PassFail</span>
+                    }
+                    else
+                    {
+                        <span>No result yet</span>
+                    }
+                </td>
+                <td>
+                    <form asp-action="RecordResult" method="post" class="d-flex gap-2">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentId" />
+
+                        <input type="text" name="gradeOrScore" class="form-control" placeholder="Grade/Score" required />
+
+                        <select name="passFail" class="form-control">
+                            <option value="Pass">Pass</option>
+                            <option value="Fail">Fail</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="MySessions" class="btn btn-secondary">Back to Sessions</a>

@@ -2,14 +2,9 @@
 {
     public class EnrollmentReportDto
     {
-        public int EnrollmentId { get; set; }
-
-        public int TraineeId { get; set; }
-
-        public int SessionId { get; set; }
-
-        public DateTime EnrollmentDate { get; set; }
-
-        public int EnrollmentStatusId { get; set; }
+        public int CourseId { get; set; }
+        public string CourseTitle { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public int TotalEnrollments { get; set; }
     }
 }

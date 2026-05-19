@@ -1,0 +1,51 @@
+﻿@model IEnumerable<SkillForge.API.Models.Session>
+
+@{
+    ViewData["Title"] = "Available Sessions";
+}
+
+<h2>Available Sessions</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Instructor</th>
+            <th>Room</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Capacity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var session in Model)
+        {
+            <tr>
+                <td>@session.Course?.Title</td>
+                <td>@session.Instructor?.FullName</td>
+                <td>@session.Room?.RoomName</td>
+                <td>@session.StartDate</td>
+                <td>@session.EndDate</td>
+                <td>@session.Capacity</td>
+                <td>
+                    <form asp-action="Enroll" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="sessionId" value="@session.SessionId" />
+                        <button type="submit" class="btn btn-primary btn-sm">Enroll</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
