@@ -28,7 +28,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddHttpClient("SkillForgeAPI", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7249/");
+    client.BaseAddress = new Uri(
+    builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7249/"
+);
 });
 
 builder.Services.AddSignalR();
