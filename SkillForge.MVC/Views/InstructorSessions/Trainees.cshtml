@@ -1,55 +1,65 @@
-﻿@model IEnumerable<SkillForge.API.Models.Enrollment>
+@model IEnumerable<SkillForge.API.Models.Enrollment>
 
 @{
     ViewData["Title"] = "Session Trainees";
 }
 
-<h2>Session Trainees</h2>
+<div class="page-card">
+    <h2 class="page-title">Session Trainees</h2>
+    <p class="page-subtitle">Review enrolled trainees and record Pass / Fail results.</p>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Trainee</th>
-            <th>Course</th>
-            <th>Current Result</th>
-            <th>Record Result</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var enrollment in Model)
-        {
-            <tr>
-                <td>@enrollment.Trainee?.FullName</td>
-                <td>@enrollment.Session?.Course?.Title</td>
-                <td>
-                    @if (enrollment.Result != null)
-                    {
-                        <span>@enrollment.Result.GradeOrScore - @enrollment.Result.PassFail</span>
-                    }
-                    else
-                    {
-                        <span>No result yet</span>
-                    }
-                </td>
-                <td>
-                    <form asp-action="RecordResult" method="post" class="d-flex gap-2">
-                        @Html.AntiForgeryToken()
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 
-                        <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentId" />
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Trainee</th>
+                    <th>Course</th>
+                    <th>Current Result</th>
+                    <th>Record Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var enrollment in Model)
+                {
+                    <tr>
+                        <td><strong>@enrollment.Trainee?.FullName</strong></td>
+                        <td>@enrollment.Session?.Course?.Title</td>
+                        <td>
+                            @if (enrollment.Result != null)
+                            {
+                                var badgeColor = enrollment.Result.PassFail == "Pass" ? "bg-success" : "bg-danger";
+                                <span class="badge @badgeColor">
+                                    @enrollment.Result.PassFail — @enrollment.Result.GradeOrScore
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No result yet</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="RecordResult" method="post" class="d-flex gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentId" />
+                                <input type="text" name="gradeOrScore" class="form-control form-control-sm"
+                                       placeholder="Grade / Score" required />
+                                <select name="passFail" class="form-select form-select-sm">
+                                    <option value="Pass">Pass</option>
+                                    <option value="Fail">Fail</option>
+                                </select>
+                                <button type="submit" class="btn btn-success btn-sm">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-                        <input type="text" name="gradeOrScore" class="form-control" placeholder="Grade/Score" required />
-
-                        <select name="passFail" class="form-control">
-                            <option value="Pass">Pass</option>
-                            <option value="Fail">Fail</option>
-                        </select>
-
-                        <button type="submit" class="btn btn-success btn-sm">Save</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a asp-action="MySessions" class="btn btn-secondary">Back to Sessions</a>
+    <a asp-action="MySessions" class="btn btn-secondary mt-2">← Back to Sessions</a>
+</div>

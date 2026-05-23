@@ -27,35 +27,10 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="CertificateLookup" asp-action="Index">Certificate Lookup</a>
-                        </li>
-
                         @if (User.IsInRole("TrainingCoordinator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Courses" asp-action="Index">Courses</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Sessions" asp-action="Index">Sessions</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Rooms" asp-action="Index">Rooms</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Tracks" asp-action="Index">Tracks</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Instructors" asp-action="Index">Instructors</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" asp-controller="Enrollments" asp-action="Index">Enrollments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Payments" asp-action="Index">Payments</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Certificates" asp-action="Index">Certificates</a>
@@ -76,9 +51,6 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="TraineeEnrollments" asp-action="MyEnrollments">My Enrollments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="TraineePayments" asp-action="MyPayments">My Payments</a>
                             </li>
                         }
                     </ul>

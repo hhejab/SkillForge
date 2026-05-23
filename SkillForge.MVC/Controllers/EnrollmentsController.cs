@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SkillForge.MVC.Controllers
 {
+    // Only the Training Coordinator can manage enrollments via this admin CRUD controller
     [Authorize(Roles = "TrainingCoordinator")]
     public class EnrollmentsController : Controller
     {
@@ -20,10 +21,13 @@ namespace SkillForge.MVC.Controllers
             _context = context;
         }
 
-        // GET: Enrollments
+        // GET: Enrollments — lists all enrollments across all trainees and sessions
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Enrollments.Include(e => e.EnrollmentStatus).Include(e => e.Session).Include(e => e.Trainee);
+            var applicationDbContext = _context.Enrollments
+                .Include(e => e.EnrollmentStatus)
+                .Include(e => e.Session)
+                .Include(e => e.Trainee);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -31,24 +35,21 @@ namespace SkillForge.MVC.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var enrollment = await _context.Enrollments
                 .Include(e => e.EnrollmentStatus)
                 .Include(e => e.Session)
                 .Include(e => e.Trainee)
                 .FirstOrDefaultAsync(m => m.EnrollmentId == id);
+
             if (enrollment == null)
-            {
                 return NotFound();
-            }
 
             return View(enrollment);
         }
 
-        // GET: Enrollments/Create
+        // GET: Enrollments/Create — coordinator can manually create an enrollment
         public IActionResult Create()
         {
             ViewData["EnrollmentStatusId"] = new SelectList(_context.EnrollmentStatuses, "EnrollmentStatusId", "StatusName");
@@ -58,8 +59,6 @@ namespace SkillForge.MVC.Controllers
         }
 
         // POST: Enrollments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EnrollmentId,TraineeId,SessionId,EnrollmentDate,EnrollmentStatusId")] Enrollment enrollment)
@@ -70,25 +69,23 @@ namespace SkillForge.MVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EnrollmentStatusId"] = new SelectList(_context.EnrollmentStatuses, "EnrollmentStatusId", "StatusName", enrollment.EnrollmentStatusId);
             ViewData["SessionId"] = new SelectList(_context.Sessions, "SessionId", "SessionId", enrollment.SessionId);
             ViewData["TraineeId"] = new SelectList(_context.Trainees, "TraineeId", "Email", enrollment.TraineeId);
             return View(enrollment);
         }
 
-        // GET: Enrollments/Edit/5
+        // GET: Enrollments/Edit/5 — coordinator can update enrollment status (e.g. Approve, Cancel)
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var enrollment = await _context.Enrollments.FindAsync(id);
             if (enrollment == null)
-            {
                 return NotFound();
-            }
+
             ViewData["EnrollmentStatusId"] = new SelectList(_context.EnrollmentStatuses, "EnrollmentStatusId", "StatusName", enrollment.EnrollmentStatusId);
             ViewData["SessionId"] = new SelectList(_context.Sessions, "SessionId", "SessionId", enrollment.SessionId);
             ViewData["TraineeId"] = new SelectList(_context.Trainees, "TraineeId", "Email", enrollment.TraineeId);
@@ -96,16 +93,12 @@ namespace SkillForge.MVC.Controllers
         }
 
         // POST: Enrollments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EnrollmentId,TraineeId,SessionId,EnrollmentDate,EnrollmentStatusId")] Enrollment enrollment)
         {
             if (id != enrollment.EnrollmentId)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -116,17 +109,15 @@ namespace SkillForge.MVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    // If the record was deleted between load and save, return 404
                     if (!EnrollmentExists(enrollment.EnrollmentId))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EnrollmentStatusId"] = new SelectList(_context.EnrollmentStatuses, "EnrollmentStatusId", "StatusName", enrollment.EnrollmentStatusId);
             ViewData["SessionId"] = new SelectList(_context.Sessions, "SessionId", "SessionId", enrollment.SessionId);
             ViewData["TraineeId"] = new SelectList(_context.Trainees, "TraineeId", "Email", enrollment.TraineeId);
@@ -137,19 +128,16 @@ namespace SkillForge.MVC.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var enrollment = await _context.Enrollments
                 .Include(e => e.EnrollmentStatus)
                 .Include(e => e.Session)
                 .Include(e => e.Trainee)
                 .FirstOrDefaultAsync(m => m.EnrollmentId == id);
+
             if (enrollment == null)
-            {
                 return NotFound();
-            }
 
             return View(enrollment);
         }
@@ -161,9 +149,7 @@ namespace SkillForge.MVC.Controllers
         {
             var enrollment = await _context.Enrollments.FindAsync(id);
             if (enrollment != null)
-            {
                 _context.Enrollments.Remove(enrollment);
-            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

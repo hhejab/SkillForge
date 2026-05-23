@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +6,7 @@ using SkillForge.API.Models;
 
 namespace SkillForge.MVC.Controllers
 {
+    // Instructors view their own sessions; the Training Coordinator can view all sessions
     [Authorize(Roles = "Instructor,TrainingCoordinator")]
     public class InstructorSessionsController : Controller
     {
@@ -18,6 +19,8 @@ namespace SkillForge.MVC.Controllers
             _userManager = userManager;
         }
 
+        // GET: InstructorSessions/MySessions
+        // Instructors only see their own sessions; coordinators see all sessions
         public async Task<IActionResult> MySessions()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -36,16 +39,16 @@ namespace SkillForge.MVC.Controllers
                 .Include(s => s.Instructor)
                 .AsQueryable();
 
+            // Filter to the logged-in instructor's sessions only (coordinators skip this filter)
             if (instructor != null && User.IsInRole("Instructor"))
-            {
                 query = query.Where(s => s.InstructorId == instructor.InstructorId);
-            }
 
             var sessions = await query.ToListAsync();
-
             return View(sessions);
         }
 
+        // GET: InstructorSessions/Trainees?sessionId=5
+        // Shows all enrolled trainees for a session so the instructor can record results
         public async Task<IActionResult> Trainees(int sessionId)
         {
             var enrollments = await _context.Enrollments
@@ -60,6 +63,9 @@ namespace SkillForge.MVC.Controllers
             return View(enrollments);
         }
 
+        // POST: InstructorSessions/RecordResult
+        // Saves the instructor's Pass/Fail result for a trainee.
+        // If Pass and payment is confirmed, a certificate is automatically generated.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RecordResult(int enrollmentId, string gradeOrScore, string passFail)
@@ -74,6 +80,7 @@ namespace SkillForge.MVC.Controllers
             if (instructor == null)
                 return NotFound("Instructor profile not found.");
 
+            // Normalize the passFail value to "Pass" or "Fail" regardless of input format
             var normalizedPassFail =
                 passFail == "true" || passFail == "True" || passFail == "Pass"
                     ? "Pass"
@@ -84,6 +91,7 @@ namespace SkillForge.MVC.Controllers
 
             if (existingResult == null)
             {
+                // First time recording a result for this enrollment
                 var result = new Result
                 {
                     EnrollmentId = enrollmentId,
@@ -92,11 +100,11 @@ namespace SkillForge.MVC.Controllers
                     UpdatedByInstructorId = instructor.InstructorId,
                     UpdatedAt = DateTime.Now
                 };
-
                 _context.Results.Add(result);
             }
             else
             {
+                // Update an already-recorded result (e.g. correction)
                 existingResult.GradeOrScore = gradeOrScore;
                 existingResult.PassFail = normalizedPassFail;
                 existingResult.UpdatedByInstructorId = instructor.InstructorId;
@@ -107,6 +115,7 @@ namespace SkillForge.MVC.Controllers
 
             if (normalizedPassFail == "Pass")
             {
+                // Certificate requires both a Pass result AND confirmed payment (PaymentStatusId = 2)
                 var paymentPaid = await _context.Payments
                     .AnyAsync(p => p.EnrollmentId == enrollmentId && p.PaymentStatusId == 2);
 
@@ -121,6 +130,7 @@ namespace SkillForge.MVC.Controllers
 
                 if (paymentPaid)
                 {
+                    // Auto-generate a unique certificate code upon Pass + paid confirmation
                     var certificateCode = $"SF-CERT-{DateTime.Now.Year}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
 
                     _context.Certificates.Add(new Certificate
@@ -128,7 +138,7 @@ namespace SkillForge.MVC.Controllers
                         EnrollmentId = enrollmentId,
                         CertificateCode = certificateCode,
                         IssueDate = DateTime.Now,
-                        VerificationStatusId = 2
+                        VerificationStatusId = 2  // 2 = "Valid"
                     });
 
                     await _context.SaveChangesAsync();
